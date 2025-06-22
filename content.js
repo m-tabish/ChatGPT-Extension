@@ -1,83 +1,42 @@
-(function() {
-  const SIDEBAR_ID = 'chatgpq-sidebar';
-  const LIST_ID = 'chatgpq-list';
+(() => {
+  console.log("hello world")
+  const observer = new MutationObserver(() => {
+    try {
+      const user = document.getElementsByClassName("whitespace-pre-wrap");
+      const system = document.getElementsByClassName("group/conversation-turn")
 
-  function createSidebar() {
-    if (document.getElementById(SIDEBAR_ID)) return;
+      let userMessages = [], system_res = [];
 
-    const sidebar = document.createElement('div');
-    sidebar.id = SIDEBAR_ID;
-    Object.assign(sidebar.style, {
-      position: 'fixed',
-      top: '0',
-      right: '0',
-      width: '280px',
-      height: '100vh',
-      backgroundColor: '#f7f7f8',
-      borderLeft: '1px solid #e2e2e2',
-      padding: '10px',
-      overflowY: 'auto',
-      zIndex: '9999',
-    });
+      if (user.length > 0 && system.length > 0) {
+        // pushing usermessages in array
+        for (let i = 0; i < user.length; i++) {
+          userMessages.push(user[i].innerText);
+          // console.log(userMessages[i].slice(0, 20) + "\n");
+        }
 
-    const title = document.createElement('h2');
-    title.innerText = 'My Questions';
-    Object.assign(title.style, { margin: '0 0 10px', fontSize: '16px' });
-    sidebar.appendChild(title);
 
-    const list = document.createElement('ul');
-    list.id = LIST_ID;
-    sidebar.appendChild(list);
 
-    document.body.appendChild(sidebar);
-  }
+        // pushing ai responses in array
 
-  function addQuestion(text, id) {
-    const list = document.getElementById(LIST_ID);
-    if (!list) return;
-    const item = document.createElement('li');
-    const link = document.createElement('a');
-    link.href = '#';
-    link.innerText = text;
-    link.onclick = (e) => {
-      e.preventDefault();
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    };
-    item.appendChild(link);
-    list.appendChild(item);
-  }
+        for (let i = 0; i < system.length; i++) {
+          system_res.push(system[i].innerText);
+          // console.log(system_res[i].slice(0, 20) + "\n");
+        }
+      }
 
-  function observeQuestions() {
-    const chatContainer = document.querySelector('main');
-    if (!chatContainer) return;
+      else {
+        throw new Error("No Chats found")
+      }
+    }
+    catch (error) {
+      alert(error)
+    }
+    observer.disconnect();
+  });
 
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach(m => {
-        m.addedNodes.forEach(node => {
-          if (node.nodeType === 1 && node.matches('div.chat-message')) {
-            const isUser = node.querySelector('svg[aria-label="User"]');
-            if (isUser) {
-              const textEl = node.querySelector('div.markdown');
-              const text = textEl?.innerText.trim();
-              if (text) {
-                const uid = 'q-' + Date.now();
-                node.id = uid;
-                addQuestion(text.split("\n")[0].slice(0, 50) + '...', uid);
-              }
-            }
-          }
-        });
-      });
-    });
 
-    observer.observe(chatContainer, { childList: true, subtree: true });
-  }
-
-  // Initialize
-  window.addEventListener('load', () => {
-    createSidebar();
-    observeQuestions();
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
   });
 })();
-
