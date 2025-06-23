@@ -4,13 +4,13 @@
 	"version": "1.0",
 	"description": "Displays your questions in a sidebar on chat.openai.com",
 	"permissions": ["storage", "activeTab", "scripting"],
-	"host_permissions": ["https://chatgpt.com/c/*"],
+	"host_permissions": ["https://chatgpt.com/*"],
 	"background": {
 		"service_worker": "background.js"
 	},
 	"content_scripts": [
 		{
-			"matches": ["https://chatgpt.com/c/*"],
+			"matches": ["https://chatgpt.com/*"],
 			"js": ["content.js"],
 			"run_at": "document_idle"
 		}
